@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario de Reclamo – Biotrom</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:   #0E6B8A;
+  --accent-d: #094E66;
+  --accent-l: #E4F2F7;
+  --bg:       #ECEEF0;
+  --surface:  #FFFFFF;
+  --border:   #D0D4D9;
+  --border-d: #B0B6BC;
+  --text:     #1C2226;
+  --text-2:   #5A6470;
+  --text-3:   #8A949E;
+  --ok-bg:    #EAF5EC; --ok-text:   #1E6B2E; --ok-bd:   #A8D5AE;
+  --warn-bg:  #FEF9EC; --warn-text: #8A5C00; --warn-bd: #ECD98A;
+  --err-bg:   #FDEDED; --err-text:  #B72020; --err-bd:  #F5AAAA;
+  --radius:   4px;
+  --font:     'IBM Plex Sans', sans-serif;
+  --mono:     'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+}
+
+.layout {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── CARD ─────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.card:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+.card:last-child  { border-radius: 0 0 var(--radius) var(--radius); }
+.card + .card     { border-top: none; }
+.card-body        { padding: 14px 16px 16px; }
+
+/* ── DOC HEADER ──────────────────────────────────────────── */
+.doc-header {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  border-bottom: 1px solid var(--border);
+  min-height: 64px;
+}
+.doc-logo {
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: .08em;
+  flex-shrink: 0;
+}
+.doc-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 16px;
+  border-right: 1px solid var(--border);
+}
+.doc-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text);
+}
+.doc-subtitle {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 3px;
+}
+/* Meta: 2x2 grid — fila 1: Aprobación + Entrada en vigor / fila 2: Código + Versión */
+.doc-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.meta-cell {
+  padding: 6px 12px;
+  min-width: 110px;
+  border-left: 1px solid var(--border);
+}
+.meta-cell:nth-child(1),
+.meta-cell:nth-child(2) { border-bottom: 1px solid var(--border); }
+.meta-label {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-3);
+  margin-bottom: 2px;
+}
+.meta-value {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ── SECTION TITLE ───────────────────────────────────────── */
+.sec-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  border-bottom: 1.5px solid var(--accent-l);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-title::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── FORM FIELDS ─────────────────────────────────────────── */
+.field-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.field-grid.cols-2   { grid-template-columns: 1fr 1fr; }
+.field-grid.cols-3   { grid-template-columns: 1fr 1fr 1fr; }
+
+.field-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+.req { color: var(--accent); }
+
+.field-input,
+.field-textarea {
+  width: 100%;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.field-input:focus,
+.field-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(14,107,138,.10);
+}
+.field-textarea {
+  resize: none;
+  min-height: 72px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+.field-textarea.auto-grow { overflow: hidden; }
+
+/* ── NIVEL BADGE OPTIONS ─────────────────────────────────── */
+.nivel-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.nivel-opt { display: none; }
+.nivel-opt + label {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.nivel-opt + label:hover { border-color: var(--accent); color: var(--accent); }
+#nivel-grave:checked    + label { background: var(--err-bg);  border-color: var(--err-bd);  color: var(--err-text); }
+#nivel-moderado:checked + label { background: var(--warn-bg); border-color: var(--warn-bd); color: var(--warn-text); }
+#nivel-leve:checked     + label { background: var(--ok-bg);   border-color: var(--ok-bd);   color: var(--ok-text); }
+
+/* ── RIESGO OPTIONS ──────────────────────────────────────── */
+.riesgo-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.riesgo-opt { display: none; }
+.riesgo-opt + label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.riesgo-opt + label::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border-d);
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.riesgo-opt + label:hover { border-color: var(--accent); }
+.riesgo-opt + label:hover::before { border-color: var(--accent); }
+
+#riesgo-no:checked       + label { border-color: var(--ok-bd);   background: var(--ok-bg);   color: var(--ok-text); }
+#riesgo-no:checked       + label::before { border-color: var(--ok-text); background: var(--ok-text); }
+#riesgo-seguridad:checked + label { border-color: var(--warn-bd); background: var(--warn-bg); color: var(--warn-text); }
+#riesgo-seguridad:checked + label::before { border-color: var(--warn-text); background: var(--warn-text); }
+#riesgo-lesion:checked   + label { border-color: var(--err-bd);  background: var(--err-bg);  color: var(--err-text); }
+#riesgo-lesion:checked   + label::before { border-color: var(--err-text); background: var(--err-text); }
+#riesgo-obito:checked    + label { border-color: #9B1C1C; background: #FEE2E2; color: #7F1D1D; font-weight: 700; }
+#riesgo-obito:checked    + label::before { border-color: #7F1D1D; background: #7F1D1D; }
+
+/* ── RADIO INLINE ────────────────────────────────────────── */
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+}
+.radio-label input {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* ── DIVIDER ─────────────────────────────────────────────── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+/* ── SUBMIT ──────────────────────────────────────────────── */
+.submit-area {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+.btn-primary {
+  height: 38px; padding: 0 20px;
+  font-family: var(--font); font-size: 13px; font-weight: 700;
+  background: var(--accent); color: #fff;
+  border: 1px solid var(--accent); border-radius: var(--radius);
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  transition: filter .1s;
+}
+.btn-primary:hover { filter: brightness(.93); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+
+#statusMsg {
+  font-family: var(--mono); font-size: 11px;
+  padding: 6px 12px; border-radius: var(--radius); display: none;
+}
+#statusMsg.ok   { background: var(--ok-bg);   color: var(--ok-text);  border: 1px solid var(--ok-bd);  display: block; }
+#statusMsg.err  { background: var(--err-bg);  color: var(--err-text); border: 1px solid var(--err-bd); display: block; }
+#statusMsg.info { background: var(--accent-l);color: var(--accent-d); border: 1px solid #B0D8E8;       display: block; }
+
+/* ── SUCCESS ─────────────────────────────────────────────── */
+#successScreen {
+  display: none; flex-direction: column; align-items: center;
+  text-align: center; padding: 48px 24px; gap: 12px;
+}
+#successScreen.visible { display: flex; }
+.success-icon {
+  width: 56px; height: 56px;
+  background: var(--ok-bg); border: 2px solid var(--ok-bd); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.success-id { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--accent); letter-spacing: .05em; }
+.success-text { font-size: 13px; color: var(--text-2); max-width: 360px; }
+.btn-light {
+  height: 34px; padding: 0 14px;
+  font-family: var(--font); font-size: 12px; font-weight: 600;
+  background: var(--surface); color: var(--text-2); border: 1px solid var(--border);
+  border-radius: var(--radius); cursor: pointer; margin-top: 8px; transition: filter .1s;
+}
+.btn-light:hover { filter: brightness(.95); }
+
+/* ── MISC ────────────────────────────────────────────────── */
+.req-note { font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
+.req-note span { color: var(--accent); font-weight: 700; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  body { padding: 12px 10px 40px; }
+  .doc-header { grid-template-columns: 56px 1fr; }
+  .doc-meta { display: none; }
+  .doc-title-wrap { border-right: none; }
+  .field-grid.cols-2,
+  .field-grid.cols-3 { grid-template-columns: 1fr; }
+  .submit-area { flex-direction: column; align-items: stretch; }
+  .btn-primary { justify-content: center; }
+}
+
+@media print {
+  @page { size: A4; margin: 20mm 18mm; }
+  body { background: white; padding: 0; }
+  .layout { max-width: 100%; }
+  .card { box-shadow: none; }
+  #submitArea { display: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <div class="card" id="formCard">
+
+    <!-- HEADER DOCUMENTAL -->
+    <div class="doc-header">
+      <div class="doc-logo">BT</div>
+      <div class="doc-title-wrap">
+        <div class="doc-title">Formulario de Reclamo de Clientes</div>
+        <div class="doc-subtitle">Sistema de Gestión de Calidad — Biotrom</div>
+      </div>
+      <div class="doc-meta">
+        <div class="meta-cell">
+          <span class="meta-label">Aprobación</span>
+          <span class="meta-value">__/__/____</span>
+        </div>
+        <div class="meta-cell">
+          <span class="meta-label">Entrada en vigor</span>
+          <span class="meta-value">__/__/____</span>
+        </div>
+        <div class="meta-cell">
+          <span class="meta-label">Código</span>
+          <span class="meta-value">FOR-001</span>
+        </div>
+        <div class="meta-cell">
+          <span class="meta-label">Versión</span>
+          <span class="meta-value">01</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="card-body" id="formContent">
+      <p class="req-note">Los campos marcados con <span>*</span> son obligatorios.</p>
+
+      <!-- 1. DATOS DEL RECLAMO -->
+      <div class="sec-title">1. Datos del Reclamo</div>
+
+      <div class="field-grid cols-3" style="grid-template-columns:1fr 1fr 100px;">
+        <div>
+          <label class="field-label">Fecha del reclamo <span class="req">*</span></label>
+          <input class="field-input" type="date" id="f_fecha" required>
+        </div>
+        <div>
+          <label class="field-label">Código de producto</label>
+          <input class="field-input" type="text" id="f_codProd" placeholder="Ej: IMP-001">
+        </div>
+        <div>
+          <label class="field-label">Lote</label>
+          <input class="field-input" type="text" id="f_lote" placeholder="N.º lote">
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-bottom:12px;">
+        <div>
+          <label class="field-label">Producto / instrumental <span class="req">*</span></label>
+          <input class="field-input" type="text" id="f_producto" placeholder="Descripción del producto" required>
+        </div>
+      </div>
+
+      <div class="field-grid cols-3">
+        <div>
+          <label class="field-label">Apellido y nombre del reclamante <span class="req">*</span></label>
+          <input class="field-input" type="text" id="f_reclamante" placeholder="Apellido y nombre" required>
+        </div>
+        <div>
+          <label class="field-label">Área / Institución</label>
+          <input class="field-input" type="text" id="f_area" placeholder="Área o institución">
+        </div>
+        <div>
+          <label class="field-label">Email de contacto</label>
+          <input class="field-input" type="email" id="f_email" placeholder="correo@ejemplo.com">
+        </div>
+      </div>
+
+
+      <hr class="divider">
+
+      <!-- 2. DATOS DEL PACIENTE -->
+      <div class="sec-title">2. Datos del Paciente</div>
+
+      <div class="field-grid cols-3" style="grid-template-columns:1fr 80px 80px;">
+        <div>
+          <label class="field-label">Apellido y nombre del paciente <span class="req">*</span></label>
+          <input class="field-input" type="text" id="f_paciente" placeholder="Apellido y nombre" required>
+        </div>
+        <div>
+          <label class="field-label">Edad</label>
+          <input class="field-input" type="text" id="f_edad" placeholder="Años">
+        </div>
+        <div>
+          <label class="field-label">Peso (kg)</label>
+          <input class="field-input" type="text" id="f_peso" placeholder="kg">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label class="field-label">Nivel del reclamo <span class="req">*</span></label>
+        <div class="nivel-options">
+          <input class="nivel-opt" type="radio" name="nivel" id="nivel-grave"    value="Grave">
+          <label for="nivel-grave">Grave</label>
+          <input class="nivel-opt" type="radio" name="nivel" id="nivel-moderado" value="Moderado">
+          <label for="nivel-moderado">Moderado</label>
+          <input class="nivel-opt" type="radio" name="nivel" id="nivel-leve"     value="Leve">
+          <label for="nivel-leve">Leve</label>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 3. DATOS DEL PROFESIONAL Y LA CIRUGÍA -->
+      <div class="sec-title">3. Datos del Profesional y de la Cirugía</div>
+
+      <div class="field-grid cols-2">
+        <div>
+          <label class="field-label">Apellido y nombre del cirujano interviniente <span class="req">*</span></label>
+          <input class="field-input" type="text" id="f_cirujano" placeholder="Apellido y nombre" required>
+        </div>
+        <div>
+          <label class="field-label">Diagnóstico</label>
+          <input class="field-input" type="text" id="f_diagnostico" placeholder="Diagnóstico">
+        </div>
+      </div>
+
+      <div class="field-grid cols-2">
+        <div>
+          <label class="field-label">Institución donde se realizó la operación</label>
+          <input class="field-input" type="text" id="f_institucion" placeholder="Hospital / Clínica">
+        </div>
+        <div>
+          <label class="field-label">Fecha de la operación <span class="req">*</span></label>
+          <input class="field-input" type="date" id="f_fechaOp" required>
+        </div>
+      </div>
+
+      <div class="field-grid cols-2" style="margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-bottom:6px;">Estudios preoperatorios</label>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div class="radio-row">
+              <label class="radio-label"><input type="radio" name="preop" value="Si"> Sí</label>
+              <label class="radio-label"><input type="radio" name="preop" value="No"> No</label>
+            </div>
+            <input class="field-input" type="text" id="f_preop_cuales" placeholder="Cuáles..." style="flex:1;min-width:80px;">
+          </div>
+        </div>
+        <div>
+          <label class="field-label" style="margin-bottom:6px;">Estudios postoperatorios</label>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div class="radio-row">
+              <label class="radio-label"><input type="radio" name="postop" value="Si"> Sí</label>
+              <label class="radio-label"><input type="radio" name="postop" value="No"> No</label>
+            </div>
+            <input class="field-input" type="text" id="f_postop_cuales" placeholder="Cuáles..." style="flex:1;min-width:80px;">
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 4. DESCRIPCIÓN DEL RECLAMO -->
+      <div class="sec-title">4. Descripción del Reclamo</div>
+
+      <div style="margin-bottom:12px;">
+        <label class="field-label">Descripción detallada <span class="req">*</span></label>
+        <textarea class="field-textarea auto-grow" id="f_descripcion" rows="3" placeholder="Describir detalladamente el reclamo recibido." required></textarea>
+      </div>
+
+      <!-- RIESGO EN SEGURIDAD -->
+      <div style="margin-bottom:12px;">
+        <label class="field-label">Tipo de situación / riesgo <span class="req">*</span></label>
+        <div class="riesgo-options">
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-no"        value="Sin riesgo">
+          <label for="riesgo-no">Sin riesgo para el paciente</label>
+
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-seguridad" value="Riesgo en la seguridad">
+          <label for="riesgo-seguridad">Riesgo en la seguridad del paciente</label>
+
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-lesion"    value="Lesión">
+          <label for="riesgo-lesion">Lesión</label>
+
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-obito"     value="Óbito">
+          <label for="riesgo-obito">Óbito</label>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <hr class="divider">
+      <div class="submit-area" id="submitArea">
+        <span id="statusMsg"></span>
+        <button class="btn-primary" id="btnEnviar" onclick="enviarReclamo()">Enviar reclamo</button>
+      </div>
+    </div>
+
+  </div><!-- /formCard -->
+
+  <!-- SUCCESS -->
+  <div class="card" id="successCard" style="display:none;">
+    <div id="successScreen" class="visible">
+      <div class="success-icon">✓</div>
+      <div class="success-id" id="successId">RC-0001</div>
+      <p class="success-text">
+        Tu reclamo fue registrado correctamente.<br>
+        Guardá este número de referencia para hacer seguimiento.
+      </p>
+      <button class="btn-light" onclick="nuevoReclamo()">Ingresar otro reclamo</button>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+const FB_URL  = "https://sgc-bt-default-rtdb.firebaseio.com";
+const FB_PATH = "/reclamos";
+
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+function setStatus(msg, tipo) {
+  const el = document.getElementById("statusMsg");
+  el.textContent = msg;
+  el.className = tipo;
+}
+
+function getRadio(name) {
+  const s = document.querySelector(`input[name="${name}"]:checked`);
+  return s ? s.value : "";
+}
+
+async function generarId() {
+  try {
+    const res  = await fetch(FB_URL + "/reclamos_counter.json");
+    const val  = await res.json();
+    const next = (val || 0) + 1;
+    await fetch(FB_URL + "/reclamos_counter.json", {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(next)
+    });
+    return "RC-" + String(next).padStart(4, "0");
+  } catch(e) {
+    return "RC-" + Date.now().toString().slice(-6);
+  }
+}
+
+async function enviarReclamo() {
+  const btn = document.getElementById("btnEnviar");
+
+  const fecha       = document.getElementById("f_fecha").value;
+  const producto    = document.getElementById("f_producto").value.trim();
+  const reclamante  = document.getElementById("f_reclamante").value.trim();
+  const paciente    = document.getElementById("f_paciente").value.trim();
+  const cirujano    = document.getElementById("f_cirujano").value.trim();
+  const fechaOp     = document.getElementById("f_fechaOp").value;
+  const descripcion = document.getElementById("f_descripcion").value.trim();
+  const nivel       = getRadio("nivel");
+  const riesgo      = getRadio("riesgoSeg");
+
+  if (!fecha || !producto || !reclamante || !paciente || !cirujano || !fechaOp || !descripcion || !nivel || !riesgo) {
+    setStatus("Completá todos los campos obligatorios (*) antes de enviar.", "err");
+    return;
+  }
+
+  btn.disabled = true;
+  setStatus("Enviando...", "info");
+
+  const reclamo = {
+    id:           await generarId(),
+    estado:       "Pendiente",
+    ts:           Date.now(),
+    fechaEnvio:   new Date().toISOString(),
+    fechaReclamo: fecha,
+    codProducto:  document.getElementById("f_codProd").value.trim(),
+    lote:         document.getElementById("f_lote").value.trim(),
+    producto,
+    reclamante,
+    area:         document.getElementById("f_area").value.trim(),
+    email:        document.getElementById("f_email").value.trim(),
+    paciente,
+    edad:         document.getElementById("f_edad").value.trim(),
+    peso:         document.getElementById("f_peso").value.trim(),
+    nivel,
+    cirujano,
+    diagnostico:  document.getElementById("f_diagnostico").value.trim(),
+    institucion:  document.getElementById("f_institucion").value.trim(),
+    fechaOp,
+    preop:        getRadio("preop"),
+    preopCuales:  document.getElementById("f_preop_cuales").value.trim(),
+    postop:       getRadio("postop"),
+    postopCuales: document.getElementById("f_postop_cuales").value.trim(),
+    descripcion,
+    riesgoSeg:    riesgo,
+    // Campos para el panel
+    investigar:        "",
+    motivoNoInvestiga: "",
+    acciones:          [],
+    cierreResponsable: "",
+    cierreFecha:       "",
+    notas:             ""
+  };
+
+  try {
+    const r = await fetch(FB_URL + FB_PATH + "/" + reclamo.id + ".json", {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(reclamo)
+    });
+    if (!r.ok) throw new Error(r.status);
+
+    const locales = lsGet("reclamos_local") || {};
+    locales[reclamo.id] = reclamo;
+    lsSet("reclamos_local", locales);
+
+    document.getElementById("formCard").style.display = "none";
+    document.getElementById("successCard").style.display = "block";
+    document.getElementById("successId").textContent = reclamo.id;
+
+  } catch(e) {
+    const locales = lsGet("reclamos_pendientes") || {};
+    locales[reclamo.id] = reclamo;
+    lsSet("reclamos_pendientes", locales);
+    setStatus("No se pudo conectar. Reclamo guardado localmente (ID: " + reclamo.id + ").", "err");
+    btn.disabled = false;
+  }
+}
+
+function autoGrow(el) {
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+document.addEventListener("input", e => {
+  if (e.target.classList.contains("auto-grow")) autoGrow(e.target);
+});
+
+function limpiarFormulario() {
+  document.getElementById("formContent")
+    .querySelectorAll("input, textarea")
+    .forEach(el => {
+      if (el.type === "radio" || el.type === "checkbox") el.checked = false;
+      else el.value = "";
+    });
+  // Reset auto-grow textareas
+  document.querySelectorAll(".auto-grow").forEach(el => {
+    el.style.height = "auto";
+  });
+  document.getElementById("btnEnviar").disabled = false;
+  setStatus("", "");
+  document.getElementById("f_fecha").valueAsDate = new Date();
+}
+
+function nuevoReclamo() {
+  document.getElementById("successCard").style.display = "none";
+  document.getElementById("formCard").style.display = "block";
+  limpiarFormulario();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("f_fecha").valueAsDate = new Date();
+});
+</script>
+</body>
+</html>
