@@ -136,7 +136,10 @@ tbody tr:hover td { background: #F4F8FA; cursor: pointer; }
   padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;
   white-space: nowrap;
 }
-.badge-pendiente  { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-bd); }
+.badge-resuelta   { background: var(--ok-bg);   color: var(--ok-text);   border: 1px solid var(--ok-bd); }
+.badge-en-curso   { background: var(--accent-l); color: var(--accent-d); border: 1px solid #B0D8E8; }
+.badge-pendiente-acc { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-bd); }
+
 .badge-investigacion { background: var(--accent-l); color: var(--accent-d); border: 1px solid #B0D8E8; }
 .badge-cerrado    { background: var(--ok-bg); color: var(--ok-text); border: 1px solid var(--ok-bd); }
 .badge-grave      { background: var(--err-bg); color: var(--err-text); border: 1px solid var(--err-bd); }
@@ -211,7 +214,23 @@ tbody tr:hover td { background: #F4F8FA; cursor: pointer; }
 .btn-danger-sm:hover { filter: brightness(.93); }
 .row-actions { display: flex; gap: 4px; align-items: center; }
 
-/* ── AUTO-GROW TEXTAREA IN TABLE ─────────────────────────── */
+.acc-mini { display:inline-flex; align-items:center; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:700; font-family:var(--mono); white-space:nowrap; }
+.acc-mini-p    { background:var(--accent-l); color:var(--accent-d); border:1px solid #B0D8E8; }
+.acc-mini-co   { background:var(--err-bg);   color:var(--err-text);  border:1px solid var(--err-bd); }
+.acc-mini-capa { background:var(--warn-bg);  color:var(--warn-text); border:1px solid var(--warn-bd); }
+.acc-bubbles   { display:flex; gap:3px; flex-wrap:wrap; align-items:center; }
+
+.acc-est-pend  { background-color: var(--warn-bg) !important; color: var(--warn-text) !important; border-color: var(--warn-bd) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%238A5C00'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 5px center !important; }
+.acc-est-curso { background-color: var(--accent-l) !important; color: var(--accent-d) !important; border-color: #B0D8E8 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23094E66'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 5px center !important; }
+.acc-est-res   { background-color: var(--ok-bg) !important;   color: var(--ok-text) !important;   border-color: var(--ok-bd) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%231E6B2E'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 5px center !important; }
+
+
 .acc-textarea {
   width: 100%; border: 1px solid transparent; background: transparent;
   border-radius: 3px; padding: 4px 5px; font-family: var(--font); font-size: 11px; color: var(--text);
@@ -251,7 +270,7 @@ tbody tr:hover td { background: #F4F8FA; cursor: pointer; }
 /* Split body */
 .modal-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 2fr;
   overflow: hidden;
   flex: 1;
   min-height: 0;
@@ -500,8 +519,10 @@ tbody tr:hover td { background: #F4F8FA; cursor: pointer; }
               <th>Cirujano</th>
               <th>Nivel</th>
               <th>Riesgo</th>
+              <th>Investiga</th>
+              <th>Acciones</th>
               <th>Estado</th>
-              <th class="no-print" style="width:110px;">Acciones</th>
+              <th class="no-print" style="width:110px;">PDF / Borrar</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -714,7 +735,28 @@ function renderTable() {
   }
   empty.style.display = "none";
 
-  tbody.innerHTML = arr.map(r => `
+  tbody.innerHTML = arr.map(r => {
+    const acciones = Array.isArray(r.acciones) ? r.acciones.filter(a=>a.tipo||a.queSehizo) : [];
+    const nP    = acciones.filter(a=>a.tipo==="Preventiva").length;
+    const nCo   = acciones.filter(a=>a.tipo==="Correctiva").length;
+    const nCapa = acciones.filter(a=>a.tipo==="Correctiva y preventiva").length;
+
+    const invBadge = r.investigar === "Si"
+      ? `<span class="badge badge-investigacion">Sí</span>`
+      : r.investigar === "No"
+        ? `<span class="badge badge-pendiente">No</span>`
+        : `<span style="color:var(--text-3);font-size:11px;">—</span>`;
+
+    let accCell = `<span style="color:var(--text-3);font-size:11px;">—</span>`;
+    if (acciones.length > 0) {
+      const bubbles = [];
+      if (nP)    bubbles.push(`<span class="acc-mini acc-mini-p">P&nbsp;${nP}</span>`);
+      if (nCo)   bubbles.push(`<span class="acc-mini acc-mini-co">Co&nbsp;${nCo}</span>`);
+      if (nCapa) bubbles.push(`<span class="acc-mini acc-mini-capa">CAPA&nbsp;${nCapa}</span>`);
+      accCell = `<div class="acc-bubbles">${bubbles.join("")}</div>`;
+    }
+
+    return `
     <tr onclick="abrirModal('${r.id}')">
       <td class="td-id">${r.id||"—"}</td>
       <td class="td-fecha">${fmtFecha(r.fechaReclamo)}</td>
@@ -723,15 +765,17 @@ function renderTable() {
       <td>${r.cirujano||"—"}</td>
       <td>${badgeNivel(r.nivel)}</td>
       <td>${badgeRiesgoTabla(r.riesgoSeg)}</td>
+      <td>${invBadge}</td>
+      <td>${accCell}</td>
       <td>${badgeEstado(r.estado||"Pendiente")}</td>
       <td class="no-print" onclick="event.stopPropagation()">
         <div class="row-actions">
-          <button class="btn-pdf btn-pdf-all"  onclick="pdfTodo('${r.id}')"  title="PDF completo">PDF</button>
-          <button class="btn-danger-sm"         onclick="confirmarBorrar('${r.id}')" title="Eliminar">×</button>
+          <button class="btn-pdf btn-pdf-all" onclick="pdfTodo('${r.id}')" title="PDF completo">PDF</button>
+          <button class="btn-danger-sm" onclick="confirmarBorrar('${r.id}')" title="Eliminar">×</button>
         </div>
       </td>
-    </tr>
-  `).join("");
+    </tr>`;
+  }).join("");
 }
 
 /* ── MODAL ───────────────────────────────────────────────── */
@@ -790,7 +834,7 @@ function renderColInvestigacion(r) {
         <thead><tr>
           <th style="width:90px;">Tipo</th>
           <th>Qué se hizo</th>
-          <th style="width:80px;">Resultado</th>
+          <th style="width:90px;">Resultado</th>
           <th style="width:80px;">Responsable</th>
           <th class="no-print" style="width:24px;"></th>
         </tr></thead>
@@ -820,12 +864,24 @@ function renderColInvestigacion(r) {
 
 function accionFila(a, i) {
   const tipos = ["Correctiva","Preventiva","Correctiva y preventiva"];
-  const opts = tipos.map(t =>
+  const optsT = tipos.map(t =>
     `<option value="${t}" ${a.tipo===t?"selected":""}>${t}</option>`
   ).join("");
+
+  const estados = [
+    { val:"Pendiente",   cls:"acc-est-pend"  },
+    { val:"En curso",    cls:"acc-est-curso"  },
+    { val:"Resuelta",    cls:"acc-est-res"    }
+  ];
+  const estVal = a.estadoAcc || "";
+  const estCls = estados.find(e=>e.val===estVal)?.cls || "";
+  const optsE = estados.map(e =>
+    `<option value="${e.val}" ${estVal===e.val?"selected":""}>${e.val}</option>`
+  ).join("");
+
   return `
     <tr>
-      <td><select class="acc-select"    data-acc="${i}" data-col="tipo"><option value="">—</option>${opts}</select></td>
+      <td><select class="acc-select"    data-acc="${i}" data-col="tipo"><option value="">—</option>${optsT}</select></td>
       <td><textarea class="acc-textarea auto-grow" data-acc="${i}" data-col="queSehizo"   rows="1">${esc(a.queSehizo||'')}</textarea></td>
       <td><textarea class="acc-textarea auto-grow" data-acc="${i}" data-col="resultado"   rows="1">${esc(a.resultado||'')}</textarea></td>
       <td><input    class="acc-input"              data-acc="${i}" data-col="responsable" value="${esc(a.responsable||'')}"></td>
@@ -937,11 +993,17 @@ function cerrarModal() {
   modalId = null;
 }
 
+function actualizarColorEst(sel) {
+  sel.classList.remove("acc-est-pend","acc-est-curso","acc-est-res");
+  const map = { "Pendiente":"acc-est-pend", "En curso":"acc-est-curso", "Resuelta":"acc-est-res" };
+  if (map[sel.value]) sel.classList.add(map[sel.value]);
+}
+
 function agregarAccion() {
   const tbody = document.getElementById("accionesBody");
   const i = tbody.querySelectorAll("tr").length;
   const fila = document.createElement("tr");
-  fila.innerHTML = accionFila({ tipo:"", queSehizo:"", resultado:"", responsable:"" }, i);
+  fila.innerHTML = accionFila({ tipo:"", queSehizo:"", resultado:"", responsable:"", estadoAcc:"" }, i);
   tbody.appendChild(fila);
 }
 
@@ -965,7 +1027,8 @@ async function guardarModal() {
     tipo:        tr.querySelector('[data-col="tipo"]')?.value || "",
     queSehizo:   tr.querySelector('[data-col="queSehizo"]')?.value || "",
     resultado:   tr.querySelector('[data-col="resultado"]')?.value || "",
-    responsable: tr.querySelector('[data-col="responsable"]')?.value || ""
+    responsable: tr.querySelector('[data-col="responsable"]')?.value || "",
+    estadoAcc:   tr.querySelector('[data-col="estadoAcc"]')?.value || ""
   }));
   r.estado              = document.getElementById("eEstado").value;
   r.investigar          = document.getElementById("eInvestigar").value;
@@ -1216,7 +1279,6 @@ function pdfTodo(id) {
     <div class="sec">6. Acciones y Seguimiento</div>
     <table><thead><tr><th>Tipo</th><th>Qué se hizo</th><th>Resultado</th><th>Responsable</th></tr></thead>
     <tbody>${accFilas}</tbody></table>
-    <div class="sec">7. Cierre</div>
     <div class="grid g2"><div><span class="field-label">Quien resuelve</span><div class="field-val">${fv(r.cierreResponsable)}</div></div><div><span class="field-label">Fecha cierre</span><div class="field-val mono">${fmtFecha(r.cierreFecha)}</div></div></div>
     <div class="grid g1"><div><span class="field-label">Notas internas</span><div class="field-val area">${fv(r.notas)}</div></div></div>
   </body></html>`;
