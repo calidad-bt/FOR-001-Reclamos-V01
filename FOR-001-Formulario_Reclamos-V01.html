@@ -336,9 +336,48 @@ body {
 }
 .btn-light:hover { filter: brightness(.95); }
 
-/* ── MISC ────────────────────────────────────────────────── */
+.field-grid.cols-fecha  { grid-template-columns: 1fr 1fr 100px; }
+.field-grid.cols-paciente { grid-template-columns: 1fr 80px 80px; }
+.field-grid.cols-preop  { grid-template-columns: 1fr 1fr; }
+
+.preop-wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.preop-wrap .field-input { flex: 1; min-width: 80px; }
+
+.field-grid-mb { margin-bottom: 12px; }
+.field-wrap-mb { margin-bottom: 12px; }
+
 .req-note { font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
 .req-note span { color: var(--accent); font-weight: 700; }
+
+/* ── SUCCESS SCREEN ──────────────────────────────────────── */
+.success-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 52px 24px 56px;
+  gap: 10px;
+}
+.success-screen.visible { display: flex; }
+.success-check {
+  width: 52px; height: 52px;
+  background: var(--ok-bg); border: 1.5px solid var(--ok-bd);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--ok-text); font-weight: 700;
+  margin-bottom: 4px;
+}
+.success-id {
+  font-family: var(--mono); font-size: 22px; font-weight: 600;
+  color: var(--accent); letter-spacing: .05em;
+}
+.success-label {
+  font-size: 13px; font-weight: 600; color: var(--text);
+}
+.success-sub {
+  font-size: 12px; color: var(--text-2); max-width: 340px; line-height: 1.6;
+  margin-top: 2px;
+}
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 600px) {
@@ -352,6 +391,48 @@ body {
   .btn-primary { justify-content: center; }
 }
 
+/* ── FOTOS ───────────────────────────────────────────────── */
+.foto-drop {
+  border: 1.5px dashed var(--border-d);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  background: var(--bg);
+}
+.foto-drop:hover, .foto-drop.drag-over {
+  background: var(--accent-l);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.foto-drop input[type="file"] { display: none; }
+.foto-drop-icon { font-size: 22px; margin-bottom: 4px; color: var(--text-3); }
+.foto-grid {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+}
+.foto-thumb {
+  position: relative; width: 90px; height: 90px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; background: var(--bg);
+}
+.foto-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.foto-thumb-del {
+  position: absolute; top: 3px; right: 3px;
+  width: 18px; height: 18px;
+  background: rgba(183,32,32,.85); color: white;
+  border: none; border-radius: 50%; cursor: pointer;
+  font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+  display: flex; align-items: center; justify-content: center;
+}
+.foto-count {
+  font-size: 11px; color: var(--text-3); margin-top: 4px;
+  font-family: var(--mono);
+}
 @media print {
   @page { size: A4; margin: 20mm 18mm; }
   body { background: white; padding: 0; }
@@ -402,7 +483,7 @@ body {
       <!-- 1. DATOS DEL RECLAMO -->
       <div class="sec-title">1. Datos del Reclamo</div>
 
-      <div class="field-grid cols-3" style="grid-template-columns:1fr 1fr 100px;">
+      <div class="field-grid cols-fecha">
         <div>
           <label class="field-label">Fecha del reclamo <span class="req">*</span></label>
           <input class="field-input" type="date" id="f_fecha" required>
@@ -417,7 +498,7 @@ body {
         </div>
       </div>
 
-      <div class="field-grid" style="margin-bottom:12px;">
+      <div class="field-grid field-grid-mb">
         <div>
           <label class="field-label">Producto / instrumental <span class="req">*</span></label>
           <input class="field-input" type="text" id="f_producto" placeholder="Descripción del producto" required>
@@ -445,7 +526,7 @@ body {
       <!-- 2. DATOS DEL PACIENTE -->
       <div class="sec-title">2. Datos del Paciente</div>
 
-      <div class="field-grid cols-3" style="grid-template-columns:1fr 80px 80px;">
+      <div class="field-grid cols-paciente">
         <div>
           <label class="field-label">Apellido y nombre del paciente <span class="req">*</span></label>
           <input class="field-input" type="text" id="f_paciente" placeholder="Apellido y nombre" required>
@@ -460,7 +541,7 @@ body {
         </div>
       </div>
 
-      <div style="margin-bottom:12px;">
+      <div class="field-wrap-mb">
         <label class="field-label">Nivel del reclamo <span class="req">*</span></label>
         <div class="nivel-options">
           <input class="nivel-opt" type="radio" name="nivel" id="nivel-grave"    value="Grave">
@@ -499,25 +580,25 @@ body {
         </div>
       </div>
 
-      <div class="field-grid cols-2" style="margin-bottom:12px;">
+      <div class="field-grid cols-preop field-grid-mb">
         <div>
-          <label class="field-label" style="margin-bottom:6px;">Estudios preoperatorios</label>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <label class="field-label">Estudios preoperatorios</label>
+          <div class="preop-wrap">
             <div class="radio-row">
               <label class="radio-label"><input type="radio" name="preop" value="Si"> Sí</label>
               <label class="radio-label"><input type="radio" name="preop" value="No"> No</label>
             </div>
-            <input class="field-input" type="text" id="f_preop_cuales" placeholder="Cuáles..." style="flex:1;min-width:80px;">
+            <input class="field-input" type="text" id="f_preop_cuales" placeholder="Cuáles...">
           </div>
         </div>
         <div>
-          <label class="field-label" style="margin-bottom:6px;">Estudios postoperatorios</label>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <label class="field-label">Estudios postoperatorios</label>
+          <div class="preop-wrap">
             <div class="radio-row">
               <label class="radio-label"><input type="radio" name="postop" value="Si"> Sí</label>
               <label class="radio-label"><input type="radio" name="postop" value="No"> No</label>
             </div>
-            <input class="field-input" type="text" id="f_postop_cuales" placeholder="Cuáles..." style="flex:1;min-width:80px;">
+            <input class="field-input" type="text" id="f_postop_cuales" placeholder="Cuáles...">
           </div>
         </div>
       </div>
@@ -527,13 +608,13 @@ body {
       <!-- 4. DESCRIPCIÓN DEL RECLAMO -->
       <div class="sec-title">4. Descripción del Reclamo</div>
 
-      <div style="margin-bottom:12px;">
+      <div class="field-wrap-mb">
         <label class="field-label">Descripción detallada <span class="req">*</span></label>
         <textarea class="field-textarea auto-grow" id="f_descripcion" rows="3" placeholder="Describir detalladamente el reclamo recibido." required></textarea>
       </div>
 
       <!-- RIESGO EN SEGURIDAD -->
-      <div style="margin-bottom:12px;">
+      <div class="field-wrap-mb">
         <label class="field-label">Tipo de situación / riesgo <span class="req">*</span></label>
         <div class="riesgo-options">
           <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-no"        value="Sin riesgo">
@@ -550,6 +631,20 @@ body {
         </div>
       </div>
 
+      <!-- FOTOS -->
+      <div class="field-wrap-mb">
+        <label class="field-label">Fotos de evidencia</label>
+        <div class="foto-drop" id="fotoDrop" onclick="document.getElementById('fotoInput').click()"
+          ondragover="fotoDragOver(event)" ondragleave="fotoDragLeave(event)" ondrop="fotoDrop(event)">
+          <input type="file" id="fotoInput" accept="image/*" multiple onchange="fotoAgregar(this.files)">
+          <div class="foto-drop-icon">⊕</div>
+          <div>Hacé clic o arrastrá fotos acá</div>
+          <div style="font-size:11px;margin-top:2px;">JPG, PNG, WEBP · Máx. 3 fotos</div>
+        </div>
+        <div class="foto-grid" id="fotoGrid"></div>
+        <div class="foto-count" id="fotoCount"></div>
+      </div>
+
       <!-- SUBMIT -->
       <hr class="divider">
       <div class="submit-area" id="submitArea">
@@ -558,20 +653,16 @@ body {
       </div>
     </div>
 
-  </div><!-- /formCard -->
-
-  <!-- SUCCESS -->
-  <div class="card" id="successCard" style="display:none;">
-    <div id="successScreen" class="visible">
-      <div class="success-icon">✓</div>
+    <!-- SUCCESS (estado interno, misma card) -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-check">✓</div>
       <div class="success-id" id="successId">RC-0001</div>
-      <p class="success-text">
-        Tu reclamo fue registrado correctamente.<br>
-        Guardá este número de referencia para hacer seguimiento.
-      </p>
-      <button class="btn-light" onclick="nuevoReclamo()">Ingresar otro reclamo</button>
+      <div class="success-label">Reclamo registrado correctamente</div>
+      <p class="success-sub">Guardá este número de referencia para hacer seguimiento con el equipo de Calidad.</p>
+      <button class="btn-light" onclick="nuevoReclamo()" style="margin-top:16px;">Ingresar otro reclamo</button>
     </div>
-  </div>
+
+  </div><!-- /card -->
 
 </div><!-- /layout -->
 
@@ -607,6 +698,87 @@ async function generarId() {
   } catch(e) {
     return "RC-" + Date.now().toString().slice(-6);
   }
+}
+
+/* ── FOTOS ───────────────────────────────────────────────── */
+let fotosBase64 = []; // [{name, dataUrl}]
+const MAX_FOTOS = 3;
+const MAX_PX    = 1200; // max dimensión
+const MAX_KB    = 400;  // calidad target kb
+
+function fotoComprimir(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > MAX_PX || h > MAX_PX) {
+          if (w > h) { h = Math.round(h * MAX_PX / w); w = MAX_PX; }
+          else       { w = Math.round(w * MAX_PX / h); h = MAX_PX; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        // Reducir calidad hasta target kb
+        let quality = 0.92;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+        while (dataUrl.length > MAX_KB * 1024 * 1.37 && quality > 0.4) {
+          quality -= 0.08;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+        resolve({ name: file.name, dataUrl });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fotoAgregar(files) {
+  const disponible = MAX_FOTOS - fotosBase64.length;
+  if (disponible <= 0) { alert("Máximo 3 fotos por reclamo."); return; }
+  const lista = Array.from(files).slice(0, disponible);
+  for (const f of lista) {
+    if (!f.type.startsWith("image/")) continue;
+    const foto = await fotoComprimir(f);
+    fotosBase64.push(foto);
+  }
+  document.getElementById("fotoInput").value = "";
+  renderFotos();
+}
+
+function renderFotos() {
+  const grid = document.getElementById("fotoGrid");
+  const count = document.getElementById("fotoCount");
+  grid.innerHTML = fotosBase64.map((f, i) => `
+    <div class="foto-thumb">
+      <img src="${f.dataUrl}" alt="${f.name}">
+      <button class="foto-thumb-del" onclick="fotoEliminar(${i})" title="Eliminar">×</button>
+    </div>`).join("");
+  count.textContent = fotosBase64.length > 0
+    ? fotosBase64.length + " foto" + (fotosBase64.length > 1 ? "s" : "") + " adjunta" + (fotosBase64.length > 1 ? "s" : "")
+    : "";
+  const drop = document.getElementById("fotoDrop");
+  drop.style.display = fotosBase64.length >= MAX_FOTOS ? "none" : "";
+}
+
+function fotoEliminar(i) {
+  fotosBase64.splice(i, 1);
+  renderFotos();
+}
+
+function fotoDragOver(e) {
+  e.preventDefault();
+  document.getElementById("fotoDrop").classList.add("drag-over");
+}
+function fotoDragLeave(e) {
+  document.getElementById("fotoDrop").classList.remove("drag-over");
+}
+function fotoDrop(e) {
+  e.preventDefault();
+  document.getElementById("fotoDrop").classList.remove("drag-over");
+  fotoAgregar(e.dataTransfer.files);
 }
 
 async function enviarReclamo() {
@@ -656,6 +828,7 @@ async function enviarReclamo() {
     postopCuales: document.getElementById("f_postop_cuales").value.trim(),
     descripcion,
     riesgoSeg:    riesgo,
+    fotos:        fotosBase64.map(f => f.dataUrl),
     // Campos para el panel
     investigar:        "",
     motivoNoInvestiga: "",
@@ -677,8 +850,9 @@ async function enviarReclamo() {
     locales[reclamo.id] = reclamo;
     lsSet("reclamos_local", locales);
 
-    document.getElementById("formCard").style.display = "none";
-    document.getElementById("successCard").style.display = "block";
+    document.getElementById("formContent").style.display = "none";
+    document.getElementById("submitArea").style.display  = "none";
+    document.getElementById("successScreen").classList.add("visible");
     document.getElementById("successId").textContent = reclamo.id;
 
   } catch(e) {
@@ -715,8 +889,11 @@ function limpiarFormulario() {
 }
 
 function nuevoReclamo() {
-  document.getElementById("successCard").style.display = "none";
-  document.getElementById("formCard").style.display = "block";
+  document.getElementById("successScreen").classList.remove("visible");
+  document.getElementById("formContent").style.display = "block";
+  document.getElementById("submitArea").style.display  = "flex";
+  fotosBase64 = [];
+  renderFotos();
   limpiarFormulario();
 }
 
