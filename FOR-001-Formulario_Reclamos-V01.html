@@ -603,10 +603,24 @@ body {
         </div>
       </div>
 
+      
       <hr class="divider">
 
       <!-- 4. DESCRIPCIÓN DEL RECLAMO -->
       <div class="sec-title">4. Descripción del Reclamo</div>
+<!-- TÉCNICA QUIRÚRGICA -->
+      <div class="field-grid cols-preop field-grid-mb">
+        <div>
+          <label class="field-label">¿Se respetaron todos los pasos de la técnica? <span class="req">*</span></label>
+          <div class="preop-wrap">
+            <div class="radio-row">
+              <label class="radio-label"><input type="radio" name="tecnica" id="tecnica-si" value="Si" onchange="toggleTecnicaMotivo()"> Sí</label>
+              <label class="radio-label"><input type="radio" name="tecnica" id="tecnica-no" value="No" onchange="toggleTecnicaMotivo()"> No</label>
+            </div>
+            <input class="field-input" type="text" id="f_tecnicaMotivo" placeholder="¿Por qué no?" style="display:none;flex:1;">
+          </div>
+        </div>
+      </div>
 
       <div class="field-wrap-mb">
         <label class="field-label">Descripción detallada <span class="req">*</span></label>
@@ -793,8 +807,9 @@ async function enviarReclamo() {
   const descripcion = document.getElementById("f_descripcion").value.trim();
   const nivel       = getRadio("nivel");
   const riesgo      = getRadio("riesgoSeg");
+  const tecnica     = getRadio("tecnica");
 
-  if (!fecha || !producto || !reclamante || !paciente || !cirujano || !fechaOp || !descripcion || !nivel || !riesgo) {
+  if (!fecha || !producto || !reclamante || !paciente || !cirujano || !fechaOp || !descripcion || !nivel || !riesgo || !tecnica) {
     setStatus("Completá todos los campos obligatorios (*) antes de enviar.", "err");
     return;
   }
@@ -828,6 +843,8 @@ async function enviarReclamo() {
     postopCuales: document.getElementById("f_postop_cuales").value.trim(),
     descripcion,
     riesgoSeg:    riesgo,
+    tecnica,
+    tecnicaMotivo: tecnica === "No" ? (document.getElementById("f_tecnicaMotivo")?.value?.trim() || "") : "",
     fotos:        fotosBase64.map(f => f.dataUrl),
     // Campos para el panel
     investigar:        "",
@@ -861,6 +878,15 @@ async function enviarReclamo() {
     lsSet("reclamos_pendientes", locales);
     setStatus("No se pudo conectar. Reclamo guardado localmente (ID: " + reclamo.id + ").", "err");
     btn.disabled = false;
+  }
+}
+
+function toggleTecnicaMotivo() {
+  const val = getRadio("tecnica");
+  const inp = document.getElementById("f_tecnicaMotivo");
+  if (inp) {
+    inp.style.display = val === "No" ? "" : "none";
+    if (val !== "No") inp.value = "";
   }
 }
 
@@ -899,6 +925,29 @@ function nuevoReclamo() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("f_fecha").valueAsDate = new Date();
+
+  // ── Permitir deseleccionar radios clickeando de nuevo ──────
+  // Para los grupos de tipo badge/pill (nivel, riesgoSeg) el click
+  // ya llega al input hidden; para preop/postop/tecnica el click
+  // llega al label que wrappea el input.
+  // Estrategia: en mousedown guardamos si ya estaba checked;
+  // en change, si estaba checked lo deseleccionamos.
+  const deselGroups = ["nivel","riesgoSeg","preop","postop","tecnica"];
+  deselGroups.forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+      inp.addEventListener("mousedown", () => {
+        inp._wasChecked = inp.checked;
+      });
+      inp.addEventListener("click", () => {
+        if (inp._wasChecked) {
+          inp.checked = false;
+          inp._wasChecked = false;
+          // Disparar efectos colaterales
+          if (name === "tecnica") toggleTecnicaMotivo();
+        }
+      });
+    });
+  });
 });
 </script>
 </body>
