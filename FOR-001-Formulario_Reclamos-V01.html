@@ -291,9 +291,9 @@ body {
 /* ── SUBMIT ──────────────────────────────────────────────── */
 .submit-area {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
   padding-top: 4px;
 }
 .btn-primary {
@@ -308,8 +308,9 @@ body {
 .btn-primary:disabled { opacity: .5; cursor: not-allowed; filter: none; }
 
 #statusMsg {
-  font-family: var(--mono); font-size: 11px;
-  padding: 6px 12px; border-radius: var(--radius); display: none;
+  font-family: var(--font); font-size: 12px;
+  padding: 8px 14px; border-radius: var(--radius); display: none;
+  line-height: 1.55; max-width: 520px;
 }
 #statusMsg.ok   { background: var(--ok-bg);   color: var(--ok-text);  border: 1px solid var(--ok-bd);  display: block; }
 #statusMsg.err  { background: var(--err-bg);  color: var(--err-text); border: 1px solid var(--err-bd); display: block; }
@@ -337,7 +338,7 @@ body {
 .btn-light:hover { filter: brightness(.95); }
 
 .field-grid.cols-fecha  { grid-template-columns: 1fr 1fr 100px; }
-.field-grid.cols-paciente { grid-template-columns: 1fr 80px 80px; }
+.field-grid.cols-paciente { grid-template-columns: 1fr 1fr; }
 .field-grid.cols-preop  { grid-template-columns: 1fr 1fr; }
 
 .preop-wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -515,10 +516,12 @@ body {
           <input class="field-input" type="text" id="f_area" placeholder="Área o institución">
         </div>
         <div>
-          <label class="field-label">Email de contacto</label>
-          <input class="field-input" type="email" id="f_email" placeholder="correo@ejemplo.com">
+          <label class="field-label">Email o telefono de contacto</label>
+          <input class="field-input" type="email" id="f_email" placeholder="Mail o número de contacto">
         </div>
-      </div>
+</div>
+
+
 
 
       <hr class="divider">
@@ -531,77 +534,45 @@ body {
           <label class="field-label">Apellido y nombre del paciente <span class="req">*</span></label>
           <input class="field-input" type="text" id="f_paciente" placeholder="Apellido y nombre" required>
         </div>
-        <div>
-          <label class="field-label">Edad</label>
-          <input class="field-input" type="text" id="f_edad" placeholder="Años">
-        </div>
-        <div>
-          <label class="field-label">Peso (kg)</label>
-          <input class="field-input" type="text" id="f_peso" placeholder="kg">
-        </div>
       </div>
-
+              <!-- RIESGO EN SEGURIDAD -->
       <div class="field-wrap-mb">
-        <label class="field-label">Nivel del reclamo <span class="req">*</span></label>
-        <div class="nivel-options">
-          <input class="nivel-opt" type="radio" name="nivel" id="nivel-grave"    value="Grave">
-          <label for="nivel-grave">Grave</label>
-          <input class="nivel-opt" type="radio" name="nivel" id="nivel-moderado" value="Moderado">
-          <label for="nivel-moderado">Moderado</label>
-          <input class="nivel-opt" type="radio" name="nivel" id="nivel-leve"     value="Leve">
-          <label for="nivel-leve">Leve</label>
+        <label class="field-label">Tipo de situación / riesgo <span class="req">*</span></label>
+        <div class="riesgo-options">
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-no"        value="Sin riesgo">
+          <label for="riesgo-no">Sin riesgo para el paciente</label>
+
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-seguridad" value="Riesgo en la seguridad">
+          <label for="riesgo-seguridad">Riesgo en la seguridad del paciente</label>
+
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-lesion"    value="Lesión">
+          <label for="riesgo-lesion">Lesión</label>
+
+          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-obito"     value="Óbito">
+          <label for="riesgo-obito">Óbito</label>
         </div>
       </div>
+      
 
       <hr class="divider">
 
       <!-- 3. DATOS DEL PROFESIONAL Y LA CIRUGÍA -->
       <div class="sec-title">3. Datos del Profesional y de la Cirugía</div>
 
-      <div class="field-grid cols-2">
+      <div class="field-grid cols-3">
         <div>
-          <label class="field-label">Apellido y nombre del cirujano interviniente <span class="req">*</span></label>
+          <label class="field-label">Apellido y nombre del cirujano <span class="req">*</span></label>
           <input class="field-input" type="text" id="f_cirujano" placeholder="Apellido y nombre" required>
         </div>
         <div>
-          <label class="field-label">Diagnóstico</label>
-          <input class="field-input" type="text" id="f_diagnostico" placeholder="Diagnóstico">
-        </div>
-      </div>
-
-      <div class="field-grid cols-2">
-        <div>
-          <label class="field-label">Institución donde se realizó la operación</label>
+          <label class="field-label">Institución quirúrgica</label>
           <input class="field-input" type="text" id="f_institucion" placeholder="Hospital / Clínica">
-        </div>
-        <div>
+        </div>    
+    <div>
           <label class="field-label">Fecha de la operación <span class="req">*</span></label>
           <input class="field-input" type="date" id="f_fechaOp" required>
         </div>
-      </div>
-
-      <div class="field-grid cols-preop field-grid-mb">
-        <div>
-          <label class="field-label">Estudios preoperatorios</label>
-          <div class="preop-wrap">
-            <div class="radio-row">
-              <label class="radio-label"><input type="radio" name="preop" value="Si"> Sí</label>
-              <label class="radio-label"><input type="radio" name="preop" value="No"> No</label>
-            </div>
-            <input class="field-input" type="text" id="f_preop_cuales" placeholder="Cuáles...">
-          </div>
-        </div>
-        <div>
-          <label class="field-label">Estudios postoperatorios</label>
-          <div class="preop-wrap">
-            <div class="radio-row">
-              <label class="radio-label"><input type="radio" name="postop" value="Si"> Sí</label>
-              <label class="radio-label"><input type="radio" name="postop" value="No"> No</label>
-            </div>
-            <input class="field-input" type="text" id="f_postop_cuales" placeholder="Cuáles...">
-          </div>
-        </div>
-      </div>
+       </div>
 
       
       <hr class="divider">
@@ -625,23 +596,17 @@ body {
       <div class="field-wrap-mb">
         <label class="field-label">Descripción detallada <span class="req">*</span></label>
         <textarea class="field-textarea auto-grow" id="f_descripcion" rows="3" placeholder="Describir detalladamente el reclamo recibido." required></textarea>
-      </div>
 
-      <!-- RIESGO EN SEGURIDAD -->
-      <div class="field-wrap-mb">
-        <label class="field-label">Tipo de situación / riesgo <span class="req">*</span></label>
-        <div class="riesgo-options">
-          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-no"        value="Sin riesgo">
-          <label for="riesgo-no">Sin riesgo para el paciente</label>
 
-          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-seguridad" value="Riesgo en la seguridad">
-          <label for="riesgo-seguridad">Riesgo en la seguridad del paciente</label>
-
-          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-lesion"    value="Lesión">
-          <label for="riesgo-lesion">Lesión</label>
-
-          <input class="riesgo-opt" type="radio" name="riesgoSeg" id="riesgo-obito"     value="Óbito">
-          <label for="riesgo-obito">Óbito</label>
+<div class="field-wrap-mb">
+        <label class="field-label">Nivel del reclamo <span class="req">*</span></label>
+        <div class="nivel-options">
+          <input class="nivel-opt" type="radio" name="nivel" id="nivel-grave"    value="Grave">
+          <label for="nivel-grave">Grave</label>
+          <input class="nivel-opt" type="radio" name="nivel" id="nivel-moderado" value="Moderado">
+          <label for="nivel-moderado">Moderado</label>
+          <input class="nivel-opt" type="radio" name="nivel" id="nivel-leve"     value="Leve">
+          <label for="nivel-leve">Leve</label>
         </div>
       </div>
 
@@ -810,7 +775,26 @@ async function enviarReclamo() {
   const tecnica     = getRadio("tecnica");
 
   if (!fecha || !producto || !reclamante || !paciente || !cirujano || !fechaOp || !descripcion || !nivel || !riesgo || !tecnica) {
-    setStatus("Completá todos los campos obligatorios (*) antes de enviar.", "err");
+    // Armar lista específica de lo que falta
+    const faltantes = [];
+    if (!fecha)       faltantes.push("Fecha del reclamo");
+    if (!producto)    faltantes.push("Producto / Instrumental");
+    if (!reclamante)  faltantes.push("Nombre del reclamante");
+    if (!paciente)    faltantes.push("Nombre del paciente");
+    if (!cirujano)    faltantes.push("Cirujano interviniente");
+    if (!fechaOp)     faltantes.push("Fecha de la operación");
+    if (!descripcion) faltantes.push("Descripción detallada");
+    if (!nivel)       faltantes.push("Nivel del reclamo");
+    if (!riesgo)      faltantes.push("Tipo de situación / riesgo");
+    if (!tecnica)     faltantes.push("¿Se respetaron los pasos de la técnica?");
+    setStatus("Faltá completar: " + faltantes.join(" · "), "err");
+    // Scroll al primer campo vacío
+    const primerVacio = [
+      !fecha && "f_fecha", !producto && "f_producto", !reclamante && "f_reclamante",
+      !paciente && "f_paciente", !cirujano && "f_cirujano", !fechaOp && "f_fechaOp",
+      !descripcion && "f_descripcion"
+    ].find(Boolean);
+    if (primerVacio) document.getElementById(primerVacio)?.scrollIntoView({ behavior:"smooth", block:"center" });
     return;
   }
 
@@ -829,18 +813,14 @@ async function enviarReclamo() {
     reclamante,
     area:         document.getElementById("f_area").value.trim(),
     email:        document.getElementById("f_email").value.trim(),
+    telefono:     document.getElementById("f_telefono").value.trim(),
     paciente,
     edad:         document.getElementById("f_edad").value.trim(),
     peso:         document.getElementById("f_peso").value.trim(),
     nivel,
     cirujano,
-    diagnostico:  document.getElementById("f_diagnostico").value.trim(),
     institucion:  document.getElementById("f_institucion").value.trim(),
     fechaOp,
-    preop:        getRadio("preop"),
-    preopCuales:  document.getElementById("f_preop_cuales").value.trim(),
-    postop:       getRadio("postop"),
-    postopCuales: document.getElementById("f_postop_cuales").value.trim(),
     descripcion,
     riesgoSeg:    riesgo,
     tecnica,
@@ -932,7 +912,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // llega al label que wrappea el input.
   // Estrategia: en mousedown guardamos si ya estaba checked;
   // en change, si estaba checked lo deseleccionamos.
-  const deselGroups = ["nivel","riesgoSeg","preop","postop","tecnica"];
+  const deselGroups = ["nivel","riesgoSeg","tecnica"];
   deselGroups.forEach(name => {
     document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
       inp.addEventListener("mousedown", () => {
