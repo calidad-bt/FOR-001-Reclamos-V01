@@ -877,6 +877,13 @@ async function enviarReclamo() {
     });
     if (!r.ok) throw new Error(r.status);
 
+    // Actualizar timestamp para polling del panel (igual que FOR-002 con sugerencias)
+    await fetch(FB_URL + "/reclamos_meta/ts.json", {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(reclamo.ts)
+    });
+
     const locales = lsGet("reclamos_local") || {};
     locales[reclamo.id] = reclamo;
     lsSet("reclamos_local", locales);
