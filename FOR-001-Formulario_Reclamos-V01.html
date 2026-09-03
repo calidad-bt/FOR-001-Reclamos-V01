@@ -34,7 +34,7 @@
 <div class="success-screen" id="successScreen"><div class="success-check">✓</div><div class="success-id" id="successId">RC-0001</div><div class="success-label">Reclamo registrado correctamente</div><button class="btn-pdf-success" onclick="descargarPDFReclamo()">↓ DESCARGAR RECLAMO EN PDF</button><button class="btn-light" onclick="nuevoReclamo()" style="margin-top:16px">Ingresar otro reclamo</button></div>
 </div></div>
 <script>
-const FB_URL="https://sgc2-72ddb-default-rtdb.firebaseio.com";const FB_PATH="/reclamos";const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwCM8Fep5FUQM_oexSLdmtc1-s6_Bn9MgHDOqjkXV4buu6KzM7ADVutIDKTEp07vFmU/exec";let ultimoReclamo=null;
+const FB_URL="https://sgc-a-848bc-default-rtdb.firebaseio.com";const FB_PATH="/reclamos";const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwCM8Fep5FUQM_oexSLdmtc1-s6_Bn9MgHDOqjkXV4buu6KzM7ADVutIDKTEp07vFmU/exec";let ultimoReclamo=null;
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function setStatus(msg,tipo){const el=document.getElementById("statusMsg");el.textContent=msg;el.className=tipo}function getRadio(name){const s=document.querySelector(`input[name="${name}"]:checked`);return s?s.value:""}
 async function generarId(){try{const res=await fetch(FB_URL+"/reclamos_counter.json");const val=await res.json();const next=(val||0)+1;await fetch(FB_URL+"/reclamos_counter.json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(next)});return"RC-"+String(next).padStart(4,"0")}catch(e){return"RC-"+Date.now().toString().slice(-6)}}
